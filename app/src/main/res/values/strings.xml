@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">WeatherApp</string>
+    <string name="city_select">Select your city:</string>
+    <string name="get_weather_button">Get Weather</string>
+</resources>
