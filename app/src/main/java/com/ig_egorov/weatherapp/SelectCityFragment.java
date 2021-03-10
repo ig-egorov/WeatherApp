@@ -1,5 +1,6 @@
 package com.ig_egorov.weatherapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -13,6 +14,18 @@ import android.widget.EditText;
 
 public class SelectCityFragment extends Fragment {
 
+    interface Listener {
+        void onFragmentButtonClick();
+    }
+
+    Listener listener;
+
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.listener = (Listener) context;
+    }
 
     public SelectCityFragment() {
         // Required empty public constructor
@@ -23,14 +36,14 @@ public class SelectCityFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_select_city, container, false);
-        EditText citySelector = (EditText) view.findViewById(R.id.city_selector);
         Button getWeatherButton = (Button) view.findViewById(R.id.get_weather_button);
+        //Call Listener interface method by clicking on button within fragment
         getWeatherButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(inflater.getContext(), MainActivity.class);
-                intent.putExtra(MainActivity.CHOSEN_CITY, citySelector.getText().toString());
-                startActivity(intent);
+                if (listener != null) {
+                    listener.onFragmentButtonClick();
+                }
             }
         });
         return view;
