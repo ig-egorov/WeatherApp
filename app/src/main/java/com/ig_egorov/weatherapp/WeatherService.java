@@ -8,12 +8,18 @@ import android.widget.TextView;
 
 public class WeatherService extends Service {
 
-    private String cityName = "Moscow";
+
     private final IBinder binder = new WeatherBinder();
 
     public class WeatherBinder extends Binder {
+        private String cityName = "Moscow";
+
         WeatherService getWeatherService() {
             return WeatherService.this;
+        }
+
+        public String getCity() {
+            return this.cityName;
         }
     }
 
@@ -22,7 +28,5 @@ public class WeatherService extends Service {
         return binder;
     }
 
-    public String getCity() {
-        return this.cityName;
-    }
+
 }

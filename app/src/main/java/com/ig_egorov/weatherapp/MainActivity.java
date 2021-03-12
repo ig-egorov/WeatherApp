@@ -18,21 +18,19 @@ import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    static final String CHOSEN_CITY = null;
-    private WeatherService weatherService;
-    private boolean isBound = false;
+    static final String CHOSEN_CITY = "chosenCity";
+    private WeatherService.WeatherBinder binder;
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            WeatherService.WeatherBinder binder = (WeatherService.WeatherBinder) service;
-            weatherService = binder.getWeatherService();
-            isBound = true;
+            binder = (WeatherService.WeatherBinder) service;
+            displayCity();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            isBound = false;
+            binder = null;
         }
     };
 
@@ -45,8 +43,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
-        displayCity();
 
         //String cityName = getIntent().getExtras().getString(CHOSEN_CITY);
 
@@ -62,9 +58,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (isBound) {
+        if (binder != null) {
             unbindService(connection);
-            isBound = false;
+            binder = null;
         }
     }
 
@@ -75,15 +71,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 String cityName;
-                if (isBound && weatherService != null) {
-                    cityName = weatherService.getCity();
+                if (binder != null) {
+                    cityName = binder.getCity();
                     textView.setText(cityName);
-                } else if (isBound == false && weatherService != null) {
-                    Log.v("Error 1", "No Binding");
-                } else if (weatherService == null && isBound){
-                    Log.v("Error 2", "No Service");
                 } else {
-                    Log.v("Error 3", "Neither");
+                    Log.v("Error", "no Binder");
                 }
             }
         });
