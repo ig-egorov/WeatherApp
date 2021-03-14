@@ -19,20 +19,11 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
 
     static final String CHOSEN_CITY = "chosenCity";
-    private WeatherService.WeatherBinder binder;
-
-    private ServiceConnection connection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-            binder = (WeatherService.WeatherBinder) service;
-            displayCity();
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-            binder = null;
-        }
-    };
+    static final String TEMPERATURE_RESULT = "temperature";
+    static TextView cityView;
+    static TextView temperatureView;
+    static String cityName;
+    static String mainTemperature;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,39 +35,34 @@ public class MainActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
-        //String cityName = getIntent().getExtras().getString(CHOSEN_CITY);
+        cityView = (TextView) findViewById(R.id.temporaryCity);
+        temperatureView = (TextView) findViewById(R.id.temporaryTemperature);
+
+        cityName = getIntent().getStringExtra(CHOSEN_CITY);
+        mainTemperature = getIntent().getStringExtra(TEMPERATURE_RESULT);
+        displayResults();
 
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, WeatherService.class);
-        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (binder != null) {
-            unbindService(connection);
-            binder = null;
-        }
+
     }
 
-    public void displayCity() {
-        final TextView textView = (TextView) findViewById(R.id.temporaryText);
+    public void displayResults() {
         final Handler handler = new Handler();
         handler.post(new Runnable() {
             @Override
             public void run() {
-                String cityName;
-                if (binder != null) {
-                    cityName = binder.getCity();
-                    textView.setText(cityName);
-                } else {
-                    Log.v("Error", "no Binder");
-                }
+                cityView.setText(cityName);
+                temperatureView.setText(mainTemperature);
             }
         });
     }

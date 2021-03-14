@@ -26,14 +26,15 @@ public class SelectCityActivity extends AppCompatActivity implements SelectCityF
     //Defining cityName variable of activity by taking String from EditText field using click on a button and putting it into intent
     @Override
     public void onFragmentButtonClick() {
-        cityName = citySelector.getText().toString();
+        cityName = citySelector.getText().toString().trim().toLowerCase();
         //Temporary decision to understand the logic and code better selector
         if (TextUtils.isEmpty(cityName)) {
-            citySelector.setError("Please, select your city");
+            citySelector.setError("Can not be empty");
+            return;
         } else {
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra(MainActivity.CHOSEN_CITY, cityName);
-            startActivity(intent);
+            Intent intent = new Intent(this, WeatherIntentService.class);
+            intent.putExtra(WeatherIntentService.CHOSEN_CITY, cityName);
+            startService(intent);
         }
     }
 }
