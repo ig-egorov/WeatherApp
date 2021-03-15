@@ -20,6 +20,7 @@ public class WeatherIntentService extends IntentService {
     static final String CHOSEN_CITY = "city";
     private String city;
     private String temperatureResult;
+    private static WeatherResponse mainWeatherResponse;
 
 
     public WeatherIntentService() {
@@ -72,4 +73,7 @@ public class WeatherIntentService extends IntentService {
             }
         });
     }
+
+
+
 }

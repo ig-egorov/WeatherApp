@@ -10,4 +10,5 @@ public class WeatherResponse {
     public Main getMain() {
         return main;
     }
+
 }
