@@ -49,4 +49,5 @@ public class SelectCityFragment extends Fragment {
         return view;
     }
 
+
 }

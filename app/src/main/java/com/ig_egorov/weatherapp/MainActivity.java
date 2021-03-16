@@ -20,10 +20,16 @@ public class MainActivity extends AppCompatActivity {
 
     static final String CHOSEN_CITY = "chosenCity";
     static final String TEMPERATURE_RESULT = "temperature";
+    static final String FEELS_LIKE_RESULT = "feels like";
+    static final String SKY_IS = "sky is";
     static TextView cityView;
     static TextView temperatureView;
+    static TextView feelsLikeView;
+    static TextView skyIsView;
     static String cityName;
     static String mainTemperature;
+    static String feelsLike;
+    static String skyIs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,9 +43,14 @@ public class MainActivity extends AppCompatActivity {
 
         cityView = (TextView) findViewById(R.id.temporaryCity);
         temperatureView = (TextView) findViewById(R.id.temporaryTemperature);
+        feelsLikeView = (TextView) findViewById(R.id.temporaryFeelsLike);
+        skyIsView = (TextView) findViewById(R.id.temporarySky);
 
         cityName = getIntent().getStringExtra(CHOSEN_CITY);
         mainTemperature = getIntent().getStringExtra(TEMPERATURE_RESULT);
+        feelsLike = getIntent().getStringExtra(FEELS_LIKE_RESULT);
+        skyIs = getIntent().getStringExtra(SKY_IS);
+
         displayResults();
 
     }
@@ -61,8 +72,12 @@ public class MainActivity extends AppCompatActivity {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                cityView.setText(cityName);
-                temperatureView.setText(mainTemperature);
+                StringBuilder sb = new StringBuilder(cityName);
+                sb.setCharAt(0, Character.toUpperCase(sb.charAt(0)));
+                cityView.setText(sb.toString());
+                temperatureView.setText("The temperature is: " + mainTemperature + " C");
+                feelsLikeView.setText("Feels like: " + feelsLike + " C");
+                skyIsView.setText("Weather conditions: " + skyIs);
             }
         });
     }

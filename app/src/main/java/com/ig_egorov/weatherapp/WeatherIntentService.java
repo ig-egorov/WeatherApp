@@ -4,6 +4,8 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.util.Log;
 
+import java.util.List;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -20,19 +22,16 @@ public class WeatherIntentService extends IntentService {
     static final String CHOSEN_CITY = "city";
     private String city;
     private String temperatureResult;
-    private static WeatherResponse mainWeatherResponse;
-
 
     public WeatherIntentService() {
         super("WeatherIntentService");
     }
 
-
     @Override
     protected void onHandleIntent(Intent intent) {
         city = intent.getExtras().getString(CHOSEN_CITY);
         getCall();
-        getTemperature();
+        getMainWeatherResults();
         stopSelf();
     }
 
@@ -47,33 +46,47 @@ public class WeatherIntentService extends IntentService {
         call = getWeatherInterface.getWeather(city, "metric", API_KEY);
     }
 
-    public void getTemperature() {
+    public void getMainWeatherResults() {
         call.enqueue(new Callback<WeatherResponse>() {
             @Override
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
+                String mainTemp = "";
+                String feelsLike = "";
+                List<Weather> weatherList = null;
+                String skyState = "";
                 if (!response.isSuccessful()) {
-                    temperatureResult = response.message();
+                    mainTemp = response.message();
+                    Intent dialogIntent = new Intent(getBaseContext(), MainActivity.class);
+                    dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    dialogIntent.putExtra(MainActivity.CHOSEN_CITY, city);
+                    dialogIntent.putExtra(MainActivity.TEMPERATURE_RESULT, mainTemp);
                     return;
                 }
                 WeatherResponse weatherResponse = response.body();
+
                 Main mainBlock = weatherResponse.getMain();
-                double temp = mainBlock.getTemp();
-                temperatureResult = Double.toString(temp);
+                weatherList = weatherResponse.getWeather();
+
+                mainTemp = Double.toString(mainBlock.getTemp());
+                feelsLike = Double.toString(mainBlock.getFeels_like());
+
+                skyState = weatherList.get(0).getMain();
+
                 Intent dialogIntent = new Intent(getBaseContext(), MainActivity.class);
                 dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 dialogIntent.putExtra(MainActivity.CHOSEN_CITY, city);
-                dialogIntent.putExtra(MainActivity.TEMPERATURE_RESULT, temperatureResult);
+                dialogIntent.putExtra(MainActivity.TEMPERATURE_RESULT, mainTemp);
+                dialogIntent.putExtra(MainActivity.FEELS_LIKE_RESULT, feelsLike);
+                dialogIntent.putExtra(MainActivity.SKY_IS, skyState);
                 getApplication().startActivity(dialogIntent);
-                Log.v("Temperature", temperatureResult);
+                Log.v("Temperature", mainTemp);
             }
 
             @Override
             public void onFailure(Call<WeatherResponse> call, Throwable t) {
                 temperatureResult = t.getMessage();
+                Log.v("Error", temperatureResult);
             }
         });
     }
-
-
-
 }
